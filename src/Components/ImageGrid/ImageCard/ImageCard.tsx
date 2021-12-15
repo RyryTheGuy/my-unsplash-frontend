@@ -3,7 +3,7 @@ import LazyLoad from 'react-lazyload';
 
 interface Props {
   id: string;
-  imageURL: any; // change this to a string when the database is set up
+  imageURL: string; // change this to a string when the database is set up
   title: string;
   deletePhoto: ( id: string ) => void;
 }
@@ -12,18 +12,9 @@ const ImageCard = ( { id, imageURL, title, deletePhoto }: Props ) => {
   const [ showOverlay, setShowOverlay ] = React.useState( false );
   const img = React.useRef<HTMLImageElement>( null );
 
-  // const deleteCard = () => {
-  //   if ( card.current ) {
-  //     // FIXME: Add a way to remove the image from the database/storage
-  //     // card.current.ref.remove();
-  //   } else {
-  //     throw new Error( 'Unable to delete the image at this time. Try again later' );
-  //   }
-  // };
-
   return (
     // https://www.npmjs.com/package/react-lazyload
-    <LazyLoad height={img.current?.naturalHeight} style={{ width: `31%`, margin: '0 .75rem 1rem 0' }} once>
+    <LazyLoad height={img.current?.naturalHeight} style={{ marginBottom: '1rem' }} once>
       <div
         onMouseEnter={() => setShowOverlay( true )}
         onMouseLeave={() => setShowOverlay( false )}

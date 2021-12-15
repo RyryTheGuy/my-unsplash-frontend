@@ -1,15 +1,35 @@
 import React from "react";
 import MyUnsplashSVG from '../../assets/my_unsplash_logo.svg';
+import imageService from '../../services/images';
 import { Modal } from "../Modal/Modal";
 import { ButtonPrimary } from "../Buttons/ButtonPrimary";
+import { IImage } from "../../App";
+import { AddImageForm } from '../AddImageForm/AddImageForm';
 
-const Navbar = () => {
-  const [ showModal, setShowModal ] = React.useState( false );
+interface IProps {
+  handleNewImage: ( i: IImage ) => void;
+}
+
+const Navbar = ( { handleNewImage }: IProps ) => {
+  const [ showModal, setShowModal ] = React.useState<boolean>( false );
+  const [ imageTitle, setImageTitle ] = React.useState<string>( '' );
+  const [ imageURL, setImageURL ] = React.useState<string>( '' );
+
+  const resetState = () => {
+    setShowModal( false );
+    setImageTitle( '' );
+    setImageURL( '' );
+  };
 
   const handleSubmit = ( e: React.SyntheticEvent ) => {
     e.preventDefault();
 
-    console.log( 'Submit' );
+    imageService.postImage( imageTitle, imageURL )
+      .then( response => {
+        handleNewImage( response.savedImage );
+        resetState();
+      } )
+      .catch( e => { throw new Error( e ); } );   // todo: show a user friendly error
   };
 
   return (
@@ -23,38 +43,25 @@ const Navbar = () => {
           <i className="material-icons pl-3 text-gray-400">search</i>
           <input
             type="text"
-            name="imageName"
-            id="imageNameInput"
+            name="imageTitle"
+            id="imageTitleInput"
             placeholder="Search by name"
             className="bg-transparent outline-none py-3 px-5 h-full"
           />
         </div>
         <ButtonPrimary id="addButton" onClick={() => setShowModal( true )} >
-          Add a photo
+          Add an Image
         </ButtonPrimary>
       </div>
 
       <Modal show={showModal} close={() => setShowModal( false )}>
-        <form className="w-full" onSubmit={( e ) => handleSubmit( e )}>
-          <h2 className="text-2xl mb-5">Add a new photo</h2>
-          <div className="flex flex-col">
-            <label htmlFor="photo-name" className="mb-3">Name of photo</label>
-            <input
-              id="photo-name"
-              name="photo-name"
-              className="border border-black rounded-lg outline-none px-4 py-3 mb-5"
-              placeholder="Title/Name of the photo. Example: 'My breakfast this morning'"
-            />
-            <label htmlFor="photo-url" className="mb-3">Photo URL</label>
-            <input
-              id="photo-url"
-              name="photo-url"
-              className="border border-black rounded-lg outline-none px-4 py-3 mb-5"
-              placeholder="https://images.unsplash.com/photo-7589278432942..."
-            />
-            <ButtonPrimary type="submit">Submit</ButtonPrimary>
-          </div>
-        </form>
+        <AddImageForm
+          imageTitle={imageTitle}
+          imageURL={imageURL}
+          handleSubmit={handleSubmit}
+          handleTitleChange={setImageTitle}
+          handleImageURLChange={setImageURL}
+        />
       </Modal>
     </nav>
   );

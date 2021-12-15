@@ -1,21 +1,29 @@
 import React from "react";
-import Masonry from "react-masonry-component";
+import Masonry from "react-masonry-css";
+import './index.css';
+import imageService from "../../services/images";
 import { ImageCard } from "./ImageCard/ImageCard";
 import { Modal } from "../Modal/Modal";
 import { ButtonSecondary } from "../Buttons/ButtonSecondary";
+import { IImage } from "../../App";
 
-import carPic from '../../assets/firefox_2021-10-19_22-10-51.png';
-import colePic from '../../assets/Discord_2021-10-26_22-39-44.png';
-import iyanPic from '../../assets/10563067_665363856893211_469939799997423436_n2.jpg';
+interface IProps {
+  images: IImage[];
+  handleImageDeletion: ( id: string ) => void;
+}
 
+interface IDeleteResponse {
+  imageDeletedId: string;
+}
 
-const ImageGrid = () => {
-  // make the Masonry layout responsive
-  const options = {
-    columnWidth: 10,
-    horizontalOrder: true,
-    percentPosition: true,
-  };
+const ImageGrid = ( { images, handleImageDeletion }: IProps ) => {
+  // todo: make the Masonry layout responsive
+  // Masonry options
+  // const options = {
+  //   percentPosition: true,
+  //   columnWidth: 10,
+  //   gutter: 15,
+  // };
 
   const [ showModal, setShowModal ] = React.useState( false );
   const [ password, setPassword ] = React.useState( '' );
@@ -27,30 +35,54 @@ const ImageGrid = () => {
     setImageToBeDeleted( null );
   };
 
+  // Called when the 'delete' button is pressed on an image
   const displayModal = ( id: string ) => {
     setImageToBeDeleted( id );
     setShowModal( true );
   };
 
-  const handlePhotoDeletion = ( e: React.SyntheticEvent ) => {
+  const imageDeletion = ( e: React.SyntheticEvent ) => {
     e.preventDefault();
 
-    // todo: send password to backend and delete the image
+    if ( imageToBeDeleted ) {
+      imageService.deleteImage( password, imageToBeDeleted )
+        .then( ( response: IDeleteResponse ) => {
+          handleImageDeletion( response.imageDeletedId );
+          resetState();
+        } )
+        .catch( e => { throw new Error( e ); } );   // TODO: tell the user the password was wrong
+    } else {
+      throw new Error( 'Image cannot be deleted. Please try again later.' );
+    }
+  };
 
+  // Loop through images and display them in a card
+  const renderImages = () => {
+    if ( images.length > 0 ) {
+      return images.map( image => (
+        <ImageCard
+          key={image.id}
+          id={image.id}
+          title={image.title}
+          imageURL={image.url}
+          deletePhoto={displayModal}
+        />
+      ) );
+    }
   };
 
   return (
     <>
-      <Masonry className="w-full" options={options}>
-        <ImageCard id='abc' imageURL={carPic} title="Cool Car Picture" deletePhoto={displayModal} />
-        <ImageCard id='abc' imageURL={colePic} title="Some Soy Boy" deletePhoto={displayModal} />
-        <ImageCard id='abc' imageURL={colePic} title="Soy again" deletePhoto={displayModal} />
-        <ImageCard id='abc' imageURL={carPic} title="Another car" deletePhoto={displayModal} />
-        <ImageCard id='abc' imageURL={'https://firebasestorage.googleapis.com/v0/b/image-uploader-bf8fa.appspot.com/o/352c1ea9-d3c1-4256-bd1b-4e574e733252?alt=media&token=8efd6888-fd6d-4c68-a097-d51ec43a237b'} title="Something" deletePhoto={displayModal} />
+      <Masonry
+        breakpointCols={3}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
+        {renderImages()}
       </Masonry>
 
       <Modal show={showModal} close={resetState}>
-        <form className="w-full" onSubmit={( e ) => handlePhotoDeletion( e )}>
+        <form className="w-full" onSubmit={( e ) => imageDeletion( e )}>
           <h2 className="text-2xl mb-5">Are you sure?</h2>
           <div className="flex flex-col">
             <label htmlFor="delete-password" className="mb-3">Password</label>
