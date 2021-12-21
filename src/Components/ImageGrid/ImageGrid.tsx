@@ -4,35 +4,39 @@ import './index.css';
 import imageService from "../../services/images";
 import { ImageCard } from "./ImageCard/ImageCard";
 import { Modal } from "../Modal/Modal";
-import { ButtonSecondary } from "../Buttons/ButtonSecondary";
 import { IImage } from "../../App";
+import { INotification } from "../Notification/Notification";
+import { DeleteImageForm } from "../DeleteImageForm/DeleteImageForm";
 
 interface IProps {
   images: IImage[];
   handleImageDeletion: ( id: string ) => void;
+  titleSearch: string;
 }
 
 interface IDeleteResponse {
   imageDeletedId: string;
 }
 
-const ImageGrid = ( { images, handleImageDeletion }: IProps ) => {
-  // todo: make the Masonry layout responsive
-  // Masonry options
-  // const options = {
-  //   percentPosition: true,
-  //   columnWidth: 10,
-  //   gutter: 15,
-  // };
-
+// todo: make the Masonry layout responsive
+const ImageGrid = ( { images, handleImageDeletion, titleSearch }: IProps ) => {
   const [ showModal, setShowModal ] = React.useState( false );
+  const [ notification, setNotification ] = React.useState<INotification>( {
+    message: null,
+    isError: true
+  } );
   const [ password, setPassword ] = React.useState( '' );
   const [ imageToBeDeleted, setImageToBeDeleted ] = React.useState<string | null>( null );
+  const [ successfulDelete, setSuccessfulDelete ] = React.useState<boolean>( false );
+
+  const filteredImages = images.filter( i => i.title.includes( titleSearch ) );
 
   const resetState = () => {
     setShowModal( false );
     setPassword( '' );
     setImageToBeDeleted( null );
+    setSuccessfulDelete( false );
+    setNotification( { ...notification, message: null } );
   };
 
   // Called when the 'delete' button is pressed on an image
@@ -47,56 +51,65 @@ const ImageGrid = ( { images, handleImageDeletion }: IProps ) => {
     if ( imageToBeDeleted ) {
       imageService.deleteImage( password, imageToBeDeleted )
         .then( ( response: IDeleteResponse ) => {
+          setSuccessfulDelete( true );
           handleImageDeletion( response.imageDeletedId );
-          resetState();
         } )
-        .catch( e => { throw new Error( e ); } );   // TODO: tell the user the password was wrong
+        .catch( _ => {
+          setNotification( {
+            message: 'Password was incorrect. Unable to delete the image.',
+            isError: true
+          } );
+        } );
     } else {
-      throw new Error( 'Image cannot be deleted. Please try again later.' );
+      console.error( 'Image cannot be deleted. Please try again later.' );
     }
   };
 
   // Loop through images and display them in a card
   const renderImages = () => {
-    if ( images.length > 0 ) {
-      return images.map( image => (
-        <ImageCard
-          key={image.id}
-          id={image.id}
-          title={image.title}
-          imageURL={image.url}
-          deletePhoto={displayModal}
-        />
-      ) );
+    if ( images.length < 1 ) return null;
+    if ( filteredImages.length > 0 ) {
+      return (
+        <Masonry
+          breakpointCols={3}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {filteredImages.map( image => (
+            <ImageCard
+              key={image.id}
+              id={image.id}
+              title={image.title}
+              imageURL={image.url}
+              deletePhoto={displayModal}
+            />
+          ) )}
+        </Masonry>
+      );
     }
+
+    return (
+      <div className="w-full h-full text-center text-gray-500">
+        No results for &quot;{titleSearch}&quot;
+      </div>
+    );
   };
 
   return (
     <>
-      <Masonry
-        breakpointCols={3}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
-        {renderImages()}
-      </Masonry>
+      {renderImages()}
 
       <Modal show={showModal} close={resetState}>
-        <form className="w-full" onSubmit={( e ) => imageDeletion( e )}>
-          <h2 className="text-2xl mb-5">Are you sure?</h2>
-          <div className="flex flex-col">
-            <label htmlFor="delete-password" className="mb-3">Password</label>
-            <input
-              id="delete-password"
-              name="delete-password"
-              type="password"
-              className="border border-black rounded-lg outline-none px-4 py-3 mb-5"
-              value={password}
-              onChange={( e ) => setPassword( e.target.value )}
-            />
-            <ButtonSecondary type="submit">Delete</ButtonSecondary>
-          </div>
-        </form>
+        {successfulDelete
+          ? <div>Success!</div> // todo: make this look better. Animated?
+          : <DeleteImageForm
+            password={password}
+            notification={notification}
+            handlePasswordChange={setPassword}
+            handleSubmit={imageDeletion}
+            hideNotification={() => setNotification( { ...notification, message: null } )}
+          />
+        }
       </Modal>
     </>
   );

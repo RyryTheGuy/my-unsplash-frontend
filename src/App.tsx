@@ -13,6 +13,7 @@ export interface IImage {
 
 const App = () => {
   const [ images, setImages ] = React.useState<IImage[]>( [] );
+  const [ titleSearch, setTitleSearch ] = React.useState<string>( '' );
 
   React.useEffect( () => {
     imageService.getImages()
@@ -24,11 +25,14 @@ const App = () => {
     <div className="px-12 font-noto">
       <Navbar
         handleNewImage={( image: IImage ) => setImages( [ image, ...images ] )}
+        titleSearch={titleSearch}
+        handleSearchChange={( s: string ) => setTitleSearch( s )}
       />
 
       <ImageGrid
         images={images}
         handleImageDeletion={( id: string ) => setImages( images.filter( i => i.id !== id ) )}
+        titleSearch={titleSearch}
       />
     </div>
   );

@@ -17,7 +17,11 @@ const Modal = ( { show, close, children }: Props ) => {
   if ( !show ) return null;
 
   return (
-    <div id="modal-bg" className="fixed top-0 left-0 h-full w-full z-50 bg-black bg-opacity-50 flex justify-center align-middle" onClick={( e ) => closeModal( e )}>
+    <div
+      id="modal-bg"
+      className="fixed top-0 left-0 h-full w-full z-50 bg-black bg-opacity-50 flex justify-center align-middle"
+      onClick={( e ) => closeModal( e )}
+    >
       <div id="modal-fg" className="bg-white p-8 w-2/5 h-auto m-auto rounded-xl">
         {children}
       </div>
