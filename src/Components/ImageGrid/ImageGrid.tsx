@@ -45,6 +45,7 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: IProps ) => {
     setShowModal( true );
   };
 
+  // Called when a password is given to the delete prompt
   const imageDeletion = ( e: React.SyntheticEvent ) => {
     e.preventDefault();
 
@@ -53,6 +54,9 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: IProps ) => {
         .then( ( response: IDeleteResponse ) => {
           setSuccessfulDelete( true );
           handleImageDeletion( response.imageDeletedId );
+          setTimeout( () => {
+            resetState();
+          }, 3 * 1000 );
         } )
         .catch( _ => {
           setNotification( {
@@ -62,6 +66,10 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: IProps ) => {
         } );
     } else {
       console.error( 'Image cannot be deleted. Please try again later.' );
+      setNotification( {
+        message: 'Image cannot be deleted. Please try again later.',
+        isError: true,
+      } );
     }
   };
 
@@ -101,7 +109,14 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: IProps ) => {
 
       <Modal show={showModal} close={resetState}>
         {successfulDelete
-          ? <div>Success!</div> // todo: make this look better. Animated?
+          ? <div className="flex flex-col justify-center items-center">
+            <h2 className="text-2xl mb-5">Image successfully deleted!</h2>
+            {/* Custom Checkmark made from CSS */}
+            <svg id="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle id="checkmark_circle" cx={26} cy={26} r={25} fill="none" />
+              <path id="checkmark_check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+          </div> // todo: make this look better. Animated?
           : <DeleteImageForm
             password={password}
             notification={notification}

@@ -12,6 +12,8 @@ interface Props {
 
 // todo: Delete Success message?
 const DeleteImageForm = ( { password, notification, handlePasswordChange, handleSubmit, hideNotification }: Props ) => {
+
+
   return (
     <form className="w-full" onSubmit={( e ) => handleSubmit( e )}>
       <Notification message={notification.message} isError={notification.isError} hideNotification={hideNotification} />
