@@ -8,13 +8,13 @@ import { IImage } from "../../App";
 import { AddImageForm } from '../AddImageForm/AddImageForm';
 import { INotification } from "../Notification/Notification";
 
-interface IProps {
+interface Props {
   handleNewImage: ( i: IImage ) => void;
   titleSearch: string;
   handleSearchChange: ( s: string ) => void;
 }
 
-const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: IProps ) => {
+const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) => {
   const [ showModal, setShowModal ] = React.useState<boolean>( false );
   const [ notification, setNotification ] = React.useState<INotification>( {
     message: null,

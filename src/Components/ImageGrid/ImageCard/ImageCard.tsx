@@ -3,7 +3,7 @@ import LazyLoad from 'react-lazyload';
 
 interface Props {
   id: string;
-  imageURL: string; // change this to a string when the database is set up
+  imageURL: string;
   title: string;
   deletePhoto: ( id: string ) => void;
 }

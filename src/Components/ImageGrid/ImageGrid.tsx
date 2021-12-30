@@ -8,7 +8,7 @@ import { IImage } from "../../App";
 import { INotification } from "../Notification/Notification";
 import { DeleteImageForm } from "../DeleteImageForm/DeleteImageForm";
 
-interface IProps {
+interface Props {
   images: IImage[];
   handleImageDeletion: ( id: string ) => void;
   titleSearch: string;
@@ -19,7 +19,7 @@ interface IDeleteResponse {
 }
 
 // todo: make the Masonry layout responsive
-const ImageGrid = ( { images, handleImageDeletion, titleSearch }: IProps ) => {
+const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
   const [ showModal, setShowModal ] = React.useState( false );
   const [ notification, setNotification ] = React.useState<INotification>( {
     message: null,
