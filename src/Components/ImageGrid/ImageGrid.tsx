@@ -31,6 +31,9 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
 
   const filteredImages = images.filter( i => i.title.includes( titleSearch ) );
 
+  /**
+   * Resets the state of the component
+   */
   const resetState = () => {
     setShowModal( false );
     setPassword( '' );
@@ -39,13 +42,19 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
     setNotification( { ...notification, message: null } );
   };
 
-  // Called when the 'delete' button is pressed on an image
+  /**
+   * Shows the modal to the user and captures the image that will be deleted
+   * @param id String
+   */
   const displayModal = ( id: string ) => {
     setImageToBeDeleted( id );
     setShowModal( true );
   };
 
-  // Called when a password is given to the delete prompt
+  /**
+   * Deletes a specific image when given the correct password
+   * @param e Event Handler
+   */
   const imageDeletion = ( e: React.SyntheticEvent ) => {
     e.preventDefault();
 
@@ -73,7 +82,10 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
     }
   };
 
-  // Loop through images and display them in a card
+  /**
+   * Displays the images from the database
+   * @returns JSX.Element | null
+   */
   const renderImages = () => {
     if ( images.length < 1 ) return null;
     if ( filteredImages.length > 0 ) {

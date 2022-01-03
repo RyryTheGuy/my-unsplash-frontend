@@ -23,6 +23,9 @@ const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) =>
   const [ imageTitle, setImageTitle ] = React.useState<string>( '' );
   const [ imageURL, setImageURL ] = React.useState<string>( '' );
 
+  /**
+   * Resets the state of the component
+   */
   const resetState = () => {
     setShowModal( false );
     setImageTitle( '' );
@@ -30,10 +33,17 @@ const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) =>
     setNotification( { ...notification, message: null } );
   };
 
+  /**
+   * Handles the submit of adding a new Image URL to the database
+   * @param e Event Object
+   * @returns void
+   */
   const handleSubmit = ( e: React.SyntheticEvent ) => {
     e.preventDefault();
-    if ( !isURL( imageURL, { require_protocol: true } ) ) {
-      setNotification( { message: 'Please enter a valid URL', isError: true } );
+
+    // Data validate the image url
+    if ( !validateURL( imageURL ) ) {
+      setNotification( { message: 'Please enter a valid Image URL', isError: true } );
       return;
     }
 
@@ -53,6 +63,19 @@ const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) =>
           isError: true
         } );
       } );
+  };
+
+  /**
+   * Validates the image URL by making sure it's a valid URL and an image link
+   * @param url The image URL the user wants to upload
+   * @returns boolean
+   */
+  const validateURL = ( url: string ): boolean => {
+    const supportedImageFiles: string[] = [ 'jpeg', 'jpg', 'png', 'svg', 'webp' ];
+    if ( !isURL( url, { require_protocol: true } ) ) return false;
+    if ( !supportedImageFiles.some( file => url.includes( file ) ) ) return false;
+
+    return true;
   };
 
   return (

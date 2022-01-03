@@ -3,7 +3,6 @@ import imageService from "./services/images";
 import { Navbar } from "./Components/Navbar/Navbar";
 import { ImageGrid } from "./Components/ImageGrid/ImageGrid";
 
-// todo: make a types file?
 export interface IImage {
   id: string;
   title: string;

@@ -28,7 +28,6 @@ const AddImageForm = ( { imageTitle, imageURL, notification, handleSubmit, handl
         required
       />
 
-      {/* todo: data validate the given url */}
       <label htmlFor="image-url" className="mb-3">Image URL</label>
       <input
         id="image-url"

@@ -13,7 +13,6 @@ const ImageCard = ( { id, imageURL, title, deletePhoto }: Props ) => {
   const img = React.useRef<HTMLImageElement>( null );
 
   return (
-    // https://www.npmjs.com/package/react-lazyload
     <LazyLoad height={img.current?.naturalHeight} style={{ marginBottom: '1rem' }} once>
       <div
         onMouseEnter={() => setShowOverlay( true )}
