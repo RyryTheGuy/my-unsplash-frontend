@@ -22,6 +22,11 @@ const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) =>
   } );
   const [ imageTitle, setImageTitle ] = React.useState<string>( '' );
   const [ imageURL, setImageURL ] = React.useState<string>( '' );
+  const [ matchMedia, setMatchMedia ] = React.useState<boolean>( window.matchMedia( "(max-width: 637px)" ).matches );
+
+  React.useEffect( () => {
+    window.matchMedia( "(max-width: 637px)" ).addEventListener( 'change', e => setMatchMedia( e.matches ) );
+  } );
 
   /**
    * Resets the state of the component
@@ -79,12 +84,12 @@ const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) =>
   };
 
   return (
-    <nav className="flex p-8 align-middle items-center">
-      <div id="logo" className="h-full w-auto">
+    <nav className="flex sm:flex-col p-8 sm:px-0 sm:py-4 align-middle items-center">
+      <div id="logo" className="h-full w-auto pr-5 sm:p-0 sm:pb-2">
         <img src={MyUnsplashSVG} alt="My Unsplash Logo" className="w-full h-full" />
       </div>
-      <div className="flex pl-5 w-full justify-between align-middle items-center">
-        <div id="searchBar" className="flex align-middle items-center border-2 border-solid rounded-lg focus-within:border-gray-500 border-gray-300 h-full">
+      <div className="flex w-full justify-between sm:justify-around align-middle items-center">
+        <div id="searchBar" className="flex align-middle items-center mr-2 border-2 border-solid rounded-lg focus-within:border-gray-500 border-gray-300 h-full">
           <i className="material-icons pl-3 text-gray-400">search</i>
           <input
             type="text"
@@ -96,9 +101,12 @@ const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) =>
             onChange={( e ) => handleSearchChange( e.target.value )}
           />
         </div>
-        <ButtonPrimary id="addButton" onClick={() => setShowModal( true )} >
-          Add an Image
-        </ButtonPrimary>
+        {matchMedia
+          ? <ButtonPrimary id="addButton" onClick={() => setShowModal( true )}> + </ButtonPrimary>
+          : <ButtonPrimary id="addButton" onClick={() => setShowModal( true )} >
+            Add an Image
+          </ButtonPrimary>
+        }
       </div>
 
       <Modal show={showModal} close={resetState}>

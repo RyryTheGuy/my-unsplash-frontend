@@ -18,7 +18,6 @@ interface IDeleteResponse {
   imageDeletedId: string;
 }
 
-// todo: make the Masonry layout responsive
 const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
   const [ showModal, setShowModal ] = React.useState( false );
   const [ notification, setNotification ] = React.useState<INotification>( {
@@ -29,7 +28,7 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
   const [ imageToBeDeleted, setImageToBeDeleted ] = React.useState<string | null>( null );
   const [ successfulDelete, setSuccessfulDelete ] = React.useState<boolean>( false );
 
-  const filteredImages = images.filter( i => i.title.includes( titleSearch ) );
+  const filteredImages = images.filter( i => i.title.toLowerCase().includes( titleSearch ) );
 
   /**
    * Resets the state of the component
@@ -89,9 +88,16 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
   const renderImages = () => {
     if ( images.length < 1 ) return null;
     if ( filteredImages.length > 0 ) {
+      // Makes the Masonry layout responsive
+      const breakpointColumnsObj = {
+        default: 3,
+        1100: 2,
+        637: 1
+      };
+
       return (
         <Masonry
-          breakpointCols={3}
+          breakpointCols={breakpointColumnsObj}
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
@@ -128,7 +134,7 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
               <circle id="checkmark_circle" cx={26} cy={26} r={25} fill="none" />
               <path id="checkmark_check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
             </svg>
-          </div> // todo: make this look better. Animated?
+          </div>
           : <DeleteImageForm
             password={password}
             notification={notification}

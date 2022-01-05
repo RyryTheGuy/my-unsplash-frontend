@@ -21,7 +21,7 @@ const App = () => {
   }, [] );
 
   return (
-    <div className="px-12 font-noto">
+    <div className="px-12 sm:px-2 font-noto">
       <Navbar
         handleNewImage={( image: IImage ) => setImages( [ image, ...images ] )}
         titleSearch={titleSearch}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { IImage } from '../App';
-const baseURL = 'http://localhost:3001/images';
+const baseURL = '/images';
 
 interface IGetResponse {
   images: IImage[];
