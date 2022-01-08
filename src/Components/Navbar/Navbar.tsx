@@ -74,9 +74,8 @@ const Navbar = ( { titleSearch, notification, handleNewImage, handleSearchChange
    * @returns boolean
    */
   const validateURL = ( url: string ): boolean => {
-    const supportedImageFiles: string[] = [ 'jpeg', 'jpg', 'png', 'svg', 'webp' ];
     if ( !isURL( url, { require_protocol: true } ) ) return false;
-    if ( !supportedImageFiles.some( file => url.includes( file ) ) ) return false;
+    if ( !( /.(jpe?g|png|webp|svg)$/ ).test( url ) ) return false;
 
     return true;
   };
