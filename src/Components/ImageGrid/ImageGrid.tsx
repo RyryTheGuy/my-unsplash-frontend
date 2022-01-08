@@ -1,29 +1,25 @@
 import React from "react";
-import Masonry from "react-masonry-css";
-import './index.css';
 import imageService from "../../services/images";
-import { ImageCard } from "./ImageCard/ImageCard";
 import { Modal } from "../Modal/Modal";
 import { IImage } from "../../App";
 import { INotification } from "../Notification/Notification";
 import { DeleteImageForm } from "../DeleteImageForm/DeleteImageForm";
+import { RenderedImages } from "./RenderedImages/RenderedImages";
 
 interface Props {
   images: IImage[];
-  handleImageDeletion: ( id: string ) => void;
+  notification: INotification;
   titleSearch: string;
+  handleImageDeletion: ( id: string ) => void;
+  setNotification: ( obj: INotification ) => void;
 }
 
 interface IDeleteResponse {
   imageDeletedId: string;
 }
 
-const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
+const ImageGrid = ( { images, titleSearch, notification, handleImageDeletion, setNotification }: Props ) => {
   const [ showModal, setShowModal ] = React.useState( false );
-  const [ notification, setNotification ] = React.useState<INotification>( {
-    message: null,
-    isError: true
-  } );
   const [ password, setPassword ] = React.useState( '' );
   const [ imageToBeDeleted, setImageToBeDeleted ] = React.useState<string | null>( null );
   const [ successfulDelete, setSuccessfulDelete ] = React.useState<boolean>( false );
@@ -73,7 +69,6 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
           } );
         } );
     } else {
-      console.error( 'Image cannot be deleted. Please try again later.' );
       setNotification( {
         message: 'Image cannot be deleted. Please try again later.',
         isError: true,
@@ -81,68 +76,26 @@ const ImageGrid = ( { images, handleImageDeletion, titleSearch }: Props ) => {
     }
   };
 
-  /**
-   * Displays the images from the database
-   * @returns JSX.Element | null
-   */
-  const renderImages = () => {
-    if ( images.length < 1 ) return null;
-    if ( filteredImages.length > 0 ) {
-      // Makes the Masonry layout responsive
-      const breakpointColumnsObj = {
-        default: 3,
-        1100: 2,
-        637: 1
-      };
-
-      return (
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column"
-        >
-          {filteredImages.map( image => (
-            <ImageCard
-              key={image.id}
-              id={image.id}
-              title={image.title}
-              imageURL={image.url}
-              deletePhoto={displayModal}
-            />
-          ) )}
-        </Masonry>
-      );
-    }
-
-    return (
-      <div className="w-full h-full text-center text-gray-500">
-        No results for &quot;{titleSearch}&quot;
-      </div>
-    );
-  };
-
   return (
     <>
-      {renderImages()}
+      {images.length === 0
+        ? null
+        : <RenderedImages
+          filteredImages={filteredImages}
+          titleSearch={titleSearch}
+          displayModal={displayModal}
+        />
+      }
 
       <Modal show={showModal} close={resetState}>
-        {successfulDelete
-          ? <div className="flex flex-col justify-center items-center">
-            <h2 className="text-2xl mb-5">Image successfully deleted!</h2>
-            {/* Custom Checkmark made from CSS */}
-            <svg id="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle id="checkmark_circle" cx={26} cy={26} r={25} fill="none" />
-              <path id="checkmark_check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-            </svg>
-          </div>
-          : <DeleteImageForm
-            password={password}
-            notification={notification}
-            handlePasswordChange={setPassword}
-            handleSubmit={imageDeletion}
-            hideNotification={() => setNotification( { ...notification, message: null } )}
-          />
-        }
+        <DeleteImageForm
+          password={password}
+          notification={notification}
+          successfulDelete={successfulDelete}
+          handlePasswordChange={setPassword}
+          handleSubmit={imageDeletion}
+          hideNotification={() => setNotification( { ...notification, message: null } )}
+        />
       </Modal>
     </>
   );

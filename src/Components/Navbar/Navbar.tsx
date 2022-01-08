@@ -9,17 +9,15 @@ import { AddImageForm } from '../AddImageForm/AddImageForm';
 import { INotification } from "../Notification/Notification";
 
 interface Props {
-  handleNewImage: ( i: IImage ) => void;
   titleSearch: string;
+  notification: INotification;
+  handleNewImage: ( i: IImage ) => void;
   handleSearchChange: ( s: string ) => void;
+  setNotification: ( obj: INotification ) => void;
 }
 
-const Navbar = ( { handleNewImage, titleSearch, handleSearchChange }: Props ) => {
+const Navbar = ( { titleSearch, notification, handleNewImage, handleSearchChange, setNotification }: Props ) => {
   const [ showModal, setShowModal ] = React.useState<boolean>( false );
-  const [ notification, setNotification ] = React.useState<INotification>( {
-    message: null,
-    isError: true
-  } );
   const [ imageTitle, setImageTitle ] = React.useState<string>( '' );
   const [ imageURL, setImageURL ] = React.useState<string>( '' );
   const [ matchMedia, setMatchMedia ] = React.useState<boolean>( window.matchMedia( "(max-width: 637px)" ).matches );
